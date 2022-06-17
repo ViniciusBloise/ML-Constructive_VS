@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
         spinner.succeed()
         #spinner.stop_and_persist()
+        print(positions)
         time.sleep(1)
 
     print('-- Finished generating graphs')
