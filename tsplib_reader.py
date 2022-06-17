@@ -1,4 +1,6 @@
 import config as cfg
+import numpy as np
+from os.path import join, exists
 
 class ReadTSPlib:
 
@@ -11,7 +13,44 @@ class ReadTSPlib:
             'ATT': self.distance_att,
             'GEO': self.distance_geo
         }
-    
+
+    def instances_generator(self):
+        for file in self.instances:
+            yield self.read_instance(join(f'{self.path}instances/', file))
+
+    def read_instance(self, filename):
+        # read raw data
+        with open(filename) as file_object:
+            data = file_object.read()
+        lines = data.splitlines()
+
+        # get current instance information
+        name = lines[0].split(' ')[1]
+        n_points = np.int(lines[3].split(' ')[1])
+        distance = lines[4].split(' ')[1]
+        distance_formula = self.distance_formula_dict[distance]
+
+        # read all data points for the current instance
+        positions = np.zeros((n_points, 2))
+        for i in range(n_points):
+            line_i = lines[6 + i].split(' ')
+            positions[i, 0] = float(line_i[1])
+            positions[i, 1] = float(line_i[2])
+
+        distance_matrix = ReadTSPlib.create_dist_matrix(
+            n_points, positions, distance_formula)
+        optimal_tour = self.get_optimal_solution(name, positions)
+
+        return n_points, positions, distance_matrix, name, optimal_tour
+
+    def get_optimal_solution(self, name, positions):
+        filename = f'{self.path}optimal/{name}.npy'
+        if exists(filename):
+            optimal_tour = ReadTSPlib.load_optimal_solution(filename)
+        else:
+            optimal_tour = ReadTSPlib.compute_optimal_solution(positions)
+        return optimal_tour
+
     @staticmethod
     def distance_euc(zi, zj):
         delta_x = zi[0] - zj[0]
@@ -39,3 +78,16 @@ class ReadTSPlib:
         q2 = np.cos(lat_i - lat_j)
         q3 = np.cos(lat_i + lat_j)
         return float(RRR * np.arccos(0.5 * ((1.0 + q1) * q2 - (1.0 - q1) * q3)) + 1.0)
+
+    @staticmethod
+    def create_dist_matrix(nPoints, positions, distance_formula):
+        distance_matrix = np.zeros((nPoints, nPoints))
+        for i in range(nPoints):
+            for j in range(i, nPoints):
+                distance_matrix[i, j] = distance_formula(positions[i], positions[j])
+        distance_matrix += distance_matrix.T
+        return distance_matrix
+
+    @staticmethod
+    def load_optimal_solution(filename):
+        return np.load(filename)
