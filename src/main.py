@@ -1,6 +1,8 @@
 import time
-from tsplib import readerTSP
-from tsplib import plotterTSP
+from tsplib import readerTSP, plotterTSP
+from netx import loader
+import networkx as nx
+
 from halo import Halo
 
 if __name__ == '__main__':
@@ -26,9 +28,12 @@ if __name__ == '__main__':
         spinner.succeed()
         #spinner.stop_and_persist()
         #print(positions)
+        G = loader.from_numpy_matrix(distance_matrix)
 
         plotter.set_figure(fig)
-        plotter.plot_points(positions)
+        nx.draw(G)
+        #plotter.plot_points(positions)
+
         plotter.show(False)
         fig += 1
         time.sleep(1)

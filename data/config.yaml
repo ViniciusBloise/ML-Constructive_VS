@@ -1,6 +1,6 @@
 tsp_inst_url: ../data/TSPlib/
 tsp_inst_used:
   - a280.tsp
-  - att532.tsp
-  - bier127.tsp
+  #- att532.tsp
+  #- bier127.tsp
   - ch130.tsp
