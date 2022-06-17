@@ -2,7 +2,8 @@ import config as cfg
 import numpy as np
 from os.path import join, exists
 
-class ReadTSPlib:
+
+class ReaderTSP:
 
     def __init__(self, config=cfg.Config()):
         self.path = config.TSP_INST_URL
@@ -37,7 +38,7 @@ class ReadTSPlib:
             positions[i, 0] = float(line_i[1])
             positions[i, 1] = float(line_i[2])
 
-        distance_matrix = ReadTSPlib.create_dist_matrix(
+        distance_matrix = ReaderTSP.create_dist_matrix(
             n_points, positions, distance_formula)
         optimal_tour = self.get_optimal_solution(name, positions)
 
@@ -46,9 +47,9 @@ class ReadTSPlib:
     def get_optimal_solution(self, name, positions):
         filename = f'{self.path}optimal/{name}.npy'
         if exists(filename):
-            optimal_tour = ReadTSPlib.load_optimal_solution(filename)
+            optimal_tour = ReaderTSP.load_optimal_solution(filename)
         else:
-            optimal_tour = ReadTSPlib.compute_optimal_solution(positions)
+            optimal_tour = ReaderTSP.compute_optimal_solution(positions)
         return optimal_tour
 
     @staticmethod
@@ -72,8 +73,8 @@ class ReadTSPlib:
     @staticmethod
     def distance_geo(zi, zj):
         RRR = 6378.388
-        lat_i, lon_i = ReadTSPlib.get_lat_long(zi)
-        lat_j, lon_j = ReadTSPlib.get_lat_long(zj)
+        lat_i, lon_i = ReaderTSP.get_lat_long(zi)
+        lat_j, lon_j = ReaderTSP.get_lat_long(zj)
         q1 = np.cos(lon_i - lon_j)
         q2 = np.cos(lat_i - lat_j)
         q3 = np.cos(lat_i + lat_j)
