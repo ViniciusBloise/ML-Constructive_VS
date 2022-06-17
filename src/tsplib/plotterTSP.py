@@ -8,7 +8,7 @@ class PlotterTSP:
 
     def plot_points(self, pos):
         # fig, ax = plt.subplots()
-        plt.scatter(pos[:, 0], pos[:, 1], color='gray')
+        plt.scatter(pos[:, 0], pos[:, 1], 5, color='darkblue', marker='o')
         # self.fig = fig
         # self.ax = ax
 
